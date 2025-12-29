@@ -1,0 +1,31 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.CareerCounsellingApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorOnPrimary">@color/onPrimaryColor</item>
+        <item name="colorPrimaryContainer">@color/primaryVariantColor</item>
+        <item name="colorOnPrimaryContainer">@color/onPrimaryColor</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorOnSecondary">@color/onSecondaryColor</item>
+        <item name="colorSecondaryContainer">@color/secondaryVariantColor</item>
+        <item name="colorOnSecondaryContainer">@color/onSecondaryColor</item>
+
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/primaryVariantColor</item>
+
+        <!-- Background and Surface colors. -->
+        <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="colorSurface">@color/surfaceColor</item>
+        <item name="colorOnSurface">@color/onSurfaceColor</item>
+    </style>
+
+    <style name="Theme.CareerCounsellingApp" parent="Base.Theme.CareerCounsellingApp" />
+
+    <style name="CustomDialogTheme" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primaryColor">#001F3F</color> <!-- Deep Midnight Blue -->
+    <color name="primaryVariantColor">#001326</color>
+    <color name="onPrimaryColor">#FFFFFF</color>
+
+    <color name="secondaryColor">#D4AF37</color> <!-- Rich Gold -->
+    <color name="secondaryVariantColor">#B8860B</color>
+    <color name="onSecondaryColor">#000000</color>
+
+    <color name="backgroundColor">#001F3F</color>
+    <color name="onBackgroundColor">#FFFFFF</color>
+
+    <color name="surfaceColor">#001F3F</color>
+    <color name="onSurfaceColor">#FFFFFF</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
