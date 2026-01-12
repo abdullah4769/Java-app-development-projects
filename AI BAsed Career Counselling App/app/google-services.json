@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "222818199782",
+    "project_id": "ai-career-app",
+    "storage_bucket": "ai-career-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222818199782:android:12dea88a3d2c8b84b6f327",
+        "android_client_info": {
+          "package_name": "com.example.aibasedcareercounsellingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7voGM1i1qVk2tKdnpzojCtGNrqqn9kGg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

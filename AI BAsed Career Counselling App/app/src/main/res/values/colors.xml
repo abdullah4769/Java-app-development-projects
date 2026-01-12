@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3 Color Scheme -->
+    <color name="deep_blue">#0D47A1</color>
+    <color name="deep_blue_dark">#01579B</color>
+    <color name="cyan">#00BCD4</color>
+    <color name="cyan_light">#4DD0E1</color>
+    <color name="white_background">#FFFFFF</color>
+    
+    <!-- Glassmorphic Effect Colors -->
+    <color name="glass_background">#E6FFFFFF</color>
+    <color name="glass_stroke">#33FFFFFF</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="bg_color">#F5F5F5</color>
+    <color name="text_white">#FFFFFF</color>
+    
+    <!-- Additional UI Colors -->
+    <color name="error_red">#F44336</color>
+    <color name="success_green">#4CAF50</color>
+    <color name="transparent">#00000000</color>
+    <color name="semi_transparent_black">#80000000</color>
+    
+    <!-- Added for compatibility -->
+    <color name="white">#FFFFFF</color>
+    <color name="primary_blue">#0D47A1</color>
+    <color name="dark_gray">#424242</color>
+</resources>
