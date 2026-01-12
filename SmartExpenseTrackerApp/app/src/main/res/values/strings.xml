@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Smart Expense Tracker</string>
+    <string name="welcome_message">Welcome to Smart Expense Tracker</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="total_expense">Total Monthly Expense</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="view_expenses">View Expenses</string>
+    <string name="title_add_expense">Add New Expense</string>
+    <string name="hint_title">Expense Title</string>
+    <string name="hint_amount">Amount</string>
+    <string name="hint_date">Select Date</string>
+    <string name="hint_category">Select Category</string>
+    <string name="btn_save">Save Expense</string>
+    <string name="title_expense_list">My Expenses</string>
+    <string name="no_expenses">No expenses recorded yet.</string>
+    <string name="currency">₹</string>
+    
+    <!-- Notification -->
+    <string name="notification_channel_name">Daily Reminder</string>
+    <string name="notification_channel_desc">Reminders to add daily expenses</string>
+    <string name="notification_title">Daily Reminder</string>
+    <string name="notification_message">Don’t forget to add today’s expense!</string>
+    
+    <!-- Dialog -->
+    <string name="update">Update</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm_delete">Are you sure you want to delete this expense?</string>
+</resources>

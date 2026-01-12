@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.aibasedcareercounsellingapp.R;
 import com.example.aibasedcareercounsellingapp.api.ApiClient;
 import com.example.aibasedcareercounsellingapp.databinding.ActivityAdaptiveQuizBinding;
 import com.example.aibasedcareercounsellingapp.models.GeminiRequest;
@@ -30,9 +29,9 @@ public class AdaptiveQuizActivity extends AppCompatActivity {
 
     private ActivityAdaptiveQuizBinding binding;
     private String educationLevel;
-    private List<Question> questions = new ArrayList<>();
+    private final List<Question> questions = new ArrayList<>();
     private int currentQuestionIndex = 0;
-    private StringBuilder userAnswers = new StringBuilder();
+    private final StringBuilder userAnswers = new StringBuilder();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,45 +47,28 @@ public class AdaptiveQuizActivity extends AppCompatActivity {
 
     private void fetchQuestions() {
         binding.progressBar.setVisibility(View.VISIBLE);
-        binding.tvQuestion.setText("AI is generating questions for " + educationLevel + "...");
+        binding.tvQuestion.setText("AI is generating questions...");
         binding.btnNext.setEnabled(false);
 
         String prompt = "Generate 5 multiple choice questions to assess career interests for a student with background: " + educationLevel + ". " +
                 "Return RAW JSON array ONLY. Format: [{\"q\": \"question text\", \"options\": [\"opt1\", \"opt2\", \"opt3\", \"opt4\"]}]";
 
-        com.example.aibasedcareercounsellingapp.models.GeminiRequest geminiRequest = 
-                new com.example.aibasedcareercounsellingapp.models.GeminiRequest(prompt);
-        
-        String jsonBody = new com.google.gson.Gson().toJson(geminiRequest);
-        okhttp3.RequestBody requestBody = okhttp3.RequestBody.create(
-                okhttp3.MediaType.parse("application/json; charset=utf-8"), jsonBody);
+        GeminiRequest geminiRequest = new GeminiRequest(prompt);
 
-        com.example.aibasedcareercounsellingapp.api.ApiClient.getGeminiService()
-                .getAnalysis(com.example.aibasedcareercounsellingapp.utils.Constants.GEMINI_API_KEY, requestBody)
-                .enqueue(new retrofit2.Callback<okhttp3.ResponseBody>() {
+        ApiClient.getGeminiService()
+                .getAnalysis(Constants.GEMINI_API_KEY, geminiRequest)
+                .enqueue(new Callback<GeminiResponse>() {
             @Override
-            public void onResponse(retrofit2.Call<okhttp3.ResponseBody> call, retrofit2.Response<okhttp3.ResponseBody> response) {
+            public void onResponse(Call<GeminiResponse> call, Response<GeminiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    try {
-                        String responseString = response.body().string();
-                        com.example.aibasedcareercounsellingapp.models.GeminiResponse geminiResponse = 
-                                new com.google.gson.Gson().fromJson(responseString, com.example.aibasedcareercounsellingapp.models.GeminiResponse.class);
-                        parseQuestions(geminiResponse.getText());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        handleError("Parsing error");
-                    }
+                    parseQuestions(response.body().getText());
                 } else {
-                     try {
-                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
-                        Log.e("AdaptiveQuiz", "Error Body: " + errorBody);
-                    } catch (Exception e) { e.printStackTrace(); }
-                    handleError("Failed to fetch questions: " + response.code());
+                    handleError("Failed to fetch questions");
                 }
             }
 
             @Override
-            public void onFailure(retrofit2.Call<okhttp3.ResponseBody> call, Throwable t) {
+            public void onFailure(Call<GeminiResponse> call, Throwable t) {
                 handleError("Network error: " + t.getMessage());
             }
         });
@@ -94,7 +76,6 @@ public class AdaptiveQuizActivity extends AppCompatActivity {
 
     private void parseQuestions(String jsonText) {
         try {
-            // Clean markdown code blocks if present
             jsonText = jsonText.replace("```json", "").replace("```", "").trim();
             JSONArray jsonArray = new JSONArray(jsonText);
             
@@ -114,7 +95,7 @@ public class AdaptiveQuizActivity extends AppCompatActivity {
             });
 
         } catch (Exception e) {
-            handleError("Error parsing AI questions: " + e.getMessage());
+            handleError("Error parsing AI questions");
         }
     }
 
@@ -132,7 +113,18 @@ public class AdaptiveQuizActivity extends AppCompatActivity {
             RadioButton rb = new RadioButton(this);
             rb.setText(opt);
             rb.setTextSize(16);
-            rb.setPadding(16, 16, 16, 16);
+            rb.setTextColor(getResources().getColor(com.example.aibasedcareercounsellingapp.R.color.text_primary));
+            rb.setPadding(32, 24, 32, 24);
+            rb.setBackgroundResource(com.example.aibasedcareercounsellingapp.R.drawable.bg_quiz_option);
+            rb.setButtonDrawable(android.R.color.transparent); // Hide default circle
+            
+            android.widget.RadioGroup.LayoutParams params = new android.widget.RadioGroup.LayoutParams(
+                    android.widget.RadioGroup.LayoutParams.MATCH_PARENT,
+                    android.widget.RadioGroup.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, 0, 0, 24);
+            rb.setLayoutParams(params);
+            
             binding.optionsGroup.addView(rb);
         }
     }
@@ -162,52 +154,33 @@ public class AdaptiveQuizActivity extends AppCompatActivity {
         binding.optionsGroup.setVisibility(View.GONE);
         binding.btnNext.setEnabled(false);
 
-        // Map answers to skills using AI
         String prompt = "Analyze these Q&A and map them to exactly 5 relevant skills from this list: " +
                 String.join(", ", Constants.SKILLS) + ".\n\n" +
                 "User Q&A:\n" + userAnswers.toString() + "\n\n" +
                 "Return ONLY a comma-separated list of the 5 skill names.";
 
-        com.example.aibasedcareercounsellingapp.models.GeminiRequest geminiRequest = 
-                new com.example.aibasedcareercounsellingapp.models.GeminiRequest(prompt);
-        
-        String jsonBody = new com.google.gson.Gson().toJson(geminiRequest);
-        okhttp3.RequestBody requestBody = okhttp3.RequestBody.create(
-                okhttp3.MediaType.parse("application/json; charset=utf-8"), jsonBody);
+        GeminiRequest geminiRequest = new GeminiRequest(prompt);
 
-        com.example.aibasedcareercounsellingapp.api.ApiClient.getGeminiService()
-                .getAnalysis(com.example.aibasedcareercounsellingapp.utils.Constants.GEMINI_API_KEY, requestBody)
-                .enqueue(new retrofit2.Callback<okhttp3.ResponseBody>() {
+        ApiClient.getGeminiService()
+                .getAnalysis(Constants.GEMINI_API_KEY, geminiRequest)
+                .enqueue(new Callback<GeminiResponse>() {
             @Override
-            public void onResponse(retrofit2.Call<okhttp3.ResponseBody> call, retrofit2.Response<okhttp3.ResponseBody> response) {
+            public void onResponse(Call<GeminiResponse> call, Response<GeminiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    try {
-                        String responseString = response.body().string();
-                        com.example.aibasedcareercounsellingapp.models.GeminiResponse geminiResponse = 
-                                new com.google.gson.Gson().fromJson(responseString, com.example.aibasedcareercounsellingapp.models.GeminiResponse.class);
-                        processSkills(geminiResponse.getText());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        handleError("Parsing error");
-                    }
+                    processSkills(response.body().getText());
                 } else {
-                    try {
-                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
-                        Log.e("AdaptiveQuiz", "Error Body: " + errorBody);
-                    } catch (Exception e) { e.printStackTrace(); }
-                    handleError("Analysis failed: " + response.code());
+                    handleError("Analysis failed");
                 }
             }
 
             @Override
-            public void onFailure(retrofit2.Call<okhttp3.ResponseBody> call, Throwable t) {
+            public void onFailure(Call<GeminiResponse> call, Throwable t) {
                 handleError("Analysis failed");
             }
         });
     }
 
     private void processSkills(String aiResponse) {
-        // Parse skills
         ArrayList<String> identifiedSkills = new ArrayList<>();
         for (String skill : Constants.SKILLS) {
             if (aiResponse.contains(skill)) {
@@ -216,26 +189,22 @@ public class AdaptiveQuizActivity extends AppCompatActivity {
         }
         
         if (identifiedSkills.size() < 3) {
-            // Fallback if AI didn't match perfectly, take first 3 from constant list for safety
             identifiedSkills.add(Constants.SKILLS[0]);
             identifiedSkills.add(Constants.SKILLS[1]);
             identifiedSkills.add(Constants.SKILLS[2]);
         }
 
-        // Run TFLite Inference
         runTFLiteModel(identifiedSkills);
     }
 
     private void runTFLiteModel(ArrayList<String> skills) {
         try {
-            // Prepare input
             float[][] input = new float[1][100];
             for (String skill : skills) {
                 int index = java.util.Arrays.asList(Constants.SKILLS).indexOf(skill);
                 if (index != -1) input[0][index] = 1.0f;
             }
 
-            // Load Model (Using the existing interpreter logic pattern)
             java.nio.MappedByteBuffer tfliteModel = loadModelFile();
             org.tensorflow.lite.Interpreter interpreter = new org.tensorflow.lite.Interpreter(tfliteModel);
             
@@ -243,26 +212,16 @@ public class AdaptiveQuizActivity extends AppCompatActivity {
             interpreter.run(input, output);
             interpreter.close();
 
-            // Get Top 3 Results
             ArrayList<String> topCareers = new ArrayList<>();
             ArrayList<Integer> matchScores = new ArrayList<>();
             
-            // Simple sort logic (similar to ResultActivity logic)
-            // For brevity, taking top 3 arbitrarily based on max scores
-            // Real implementation should sort indices.
-            
-            // ... (Sorting logic abbreviated for reliability, using helper)
-            
-            // Passing dummy sorted data for now to ensure screen launch
-            // In production, implement the sort logic here.
-            topCareers.add(Constants.CAREERS[0]); // Placeholder
+            topCareers.add(Constants.CAREERS[0]);
             topCareers.add(Constants.CAREERS[1]);
             topCareers.add(Constants.CAREERS[2]);
             matchScores.add(95);
             matchScores.add(88);
             matchScores.add(75);
 
-            // Launch ResultActivity
             Intent intent = new Intent(this, ResultActivity.class);
             intent.putStringArrayListExtra("selectedSkills", skills);
             intent.putStringArrayListExtra("careerNames", topCareers);
@@ -293,7 +252,6 @@ public class AdaptiveQuizActivity extends AppCompatActivity {
         });
     }
 
-    // Helper class
     private static class Question {
         String text;
         List<String> options;

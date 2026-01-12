@@ -69,63 +69,55 @@ public class ResumeAnalysisActivity extends AppCompatActivity {
 
         binding.progressBar.setVisibility(android.view.View.VISIBLE);
         binding.btnAnalyze.setEnabled(false);
-        binding.tvResults.setText("Analyzing with Gemini AI...");
+        binding.tvResults.setText("Thinking... (This might take a few seconds)");
 
-        String prompt = "Act as a professional Resume Reviewer. Analyze the following resume text. " +
-                "Provide a structured report with: \n" +
-                "1. Overall Score (out of 100)\n" +
-                "2. Top 3 Strengths\n" +
-                "3. Top 3 Weaknesses/Missing Skills for a general tech role\n" +
-                "4. 3 Actionable Improvements\n\n" +
-                "Resume Text:\n" + extractedText.toString();
+        String prompt = "You are an elitist, top-tier tech recruiter. Analyze this resume strictly and critically.\n" +
+                "Return a structured report in the following format:\n\n" +
+                "**RESUME SCORE:** [0-100]\n\n" +
+                "**STRENGTHS:**\n" +
+                "- [Point 1]\n" +
+                "- [Point 2]\n\n" +
+                "**WEAKNESSES:**\n" +
+                "- [Point 1]\n" +
+                "- [Point 2]\n\n" +
+                "**ACTION PLAN:**\n" +
+                "- [Specific Action 1]\n" +
+                "- [Specific Action 2]\n\n" +
+                "Resume Content:\n" + extractedText.toString();
 
         com.example.aibasedcareercounsellingapp.models.GeminiRequest geminiRequest = 
                 new com.example.aibasedcareercounsellingapp.models.GeminiRequest(prompt);
 
-        // Create JSon Body
-        String jsonBody = new com.google.gson.Gson().toJson(geminiRequest);
-        okhttp3.RequestBody requestBody = okhttp3.RequestBody.create(
-                okhttp3.MediaType.parse("application/json; charset=utf-8"), jsonBody);
-
         com.example.aibasedcareercounsellingapp.api.ApiClient.getGeminiService()
-                .getAnalysis(com.example.aibasedcareercounsellingapp.utils.Constants.GEMINI_API_KEY, requestBody)
-                .enqueue(new retrofit2.Callback<okhttp3.ResponseBody>() {
+                .getAnalysis(com.example.aibasedcareercounsellingapp.utils.Constants.GEMINI_API_KEY, geminiRequest)
+                .enqueue(new retrofit2.Callback<com.example.aibasedcareercounsellingapp.models.GeminiResponse>() {
                     @Override
-                    public void onResponse(retrofit2.Call<okhttp3.ResponseBody> call, 
-                                         retrofit2.Response<okhttp3.ResponseBody> response) {
+                    public void onResponse(retrofit2.Call<com.example.aibasedcareercounsellingapp.models.GeminiResponse> call, 
+                                         retrofit2.Response<com.example.aibasedcareercounsellingapp.models.GeminiResponse> response) {
                         binding.progressBar.setVisibility(android.view.View.GONE);
                         binding.btnAnalyze.setEnabled(true);
 
                         if (response.isSuccessful() && response.body() != null) {
-                            try {
-                                String responseString = response.body().string();
-                                
-                                // Manual Parsing
-                                com.example.aibasedcareercounsellingapp.models.GeminiResponse geminiResponse = 
-                                        new com.google.gson.Gson().fromJson(responseString, com.example.aibasedcareercounsellingapp.models.GeminiResponse.class);
-                                
-                                String analysis = geminiResponse.getText();
-                                binding.tvResults.setText(analysis);
-                                saveAnalysisToFirestore(analysis);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                binding.tvResults.setText("Failed to parse response");
-                            }
+                            String analysis = response.body().getText();
+                            binding.tvResults.setText(analysis);
+                            saveAnalysisToFirestore(analysis);
                         } else {
                             try {
-                                android.util.Log.e("API_ERROR", "Response error: " + response.errorBody().string());
+                                String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown Error";
+                                android.util.Log.e("GEMINI_ERROR", "Full Error Body: " + errorBody);
+                                binding.tvResults.setText("Analysis Failed. Server Error: " + response.code() + "\nDetails: " + errorBody);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            binding.tvResults.setText("Analysis failed. Error code: " + response.code());
                         }
                     }
 
                     @Override
-                    public void onFailure(retrofit2.Call<okhttp3.ResponseBody> call, Throwable t) {
+                    public void onFailure(retrofit2.Call<com.example.aibasedcareercounsellingapp.models.GeminiResponse> call, Throwable t) {
                         binding.progressBar.setVisibility(android.view.View.GONE);
                         binding.btnAnalyze.setEnabled(true);
-                        binding.tvResults.setText("Network error: " + t.getMessage());
+                        binding.tvResults.setText("Network Failure: " + t.getMessage());
+                        android.util.Log.e("GEMINI_FAILURE", "Network Error", t);
                     }
                 });
     }

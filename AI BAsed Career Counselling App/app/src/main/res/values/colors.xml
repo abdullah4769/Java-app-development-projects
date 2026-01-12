@@ -1,30 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Material 3 Color Scheme -->
-    <color name="deep_blue">#0D47A1</color>
-    <color name="deep_blue_dark">#01579B</color>
-    <color name="cyan">#00BCD4</color>
-    <color name="cyan_light">#4DD0E1</color>
-    <color name="white_background">#FFFFFF</color>
-    
-    <!-- Glassmorphic Effect Colors -->
-    <color name="glass_background">#E6FFFFFF</color>
-    <color name="glass_stroke">#33FFFFFF</color>
+    <!-- Midnight Obsidian Palette -->
+    <color name="midnight_background">#121212</color>
+    <color name="card_surface">#1F1F1F</color>
+    <color name="electric_blue">#4D96FF</color>
     
     <!-- Text Colors -->
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
-    <color name="bg_color">#F5F5F5</color>
-    <color name="text_white">#FFFFFF</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="text_hint">#808080</color>
     
-    <!-- Additional UI Colors -->
-    <color name="error_red">#F44336</color>
-    <color name="success_green">#4CAF50</color>
+    <!-- Functional Colors -->
+    <color name="error_red">#CF6679</color>
+    <color name="success_green">#03DAC6</color>
     <color name="transparent">#00000000</color>
-    <color name="semi_transparent_black">#80000000</color>
     
-    <!-- Added for compatibility -->
+    <!-- Legacy Mappings (for compatibility) -->
     <color name="white">#FFFFFF</color>
-    <color name="primary_blue">#0D47A1</color>
-    <color name="dark_gray">#424242</color>
+    <color name="black">#000000</color>
+    <color name="bg_color">@color/midnight_background</color>
+    <color name="deep_blue">@color/electric_blue</color>
+    <color name="deep_blue_dark">#0056D2</color>
+    <color name="cyan">@color/electric_blue</color>
+    <color name="cyan_light">#82B1FF</color>
+    <color name="surface_dark">@color/card_surface</color>
+    
+    <!-- Restored Legacy Colors (Fixing Build Errors) -->
+    <color name="text_white">@color/text_primary</color>
+    <color name="white_background">@color/midnight_background</color>
+    <color name="primary_blue">@color/electric_blue</color>
+    <color name="dark_gray">@color/card_surface</color>
+    
+    <!-- Glassmorphic mappings -->
+    <color name="glass_background">@color/card_surface</color>
+    <color name="glass_stroke">#334D96FF</color>
+    
+    <!-- UI Elements -->
+    <color name="nav_bar_color">@color/card_surface</color>
+    <color name="status_bar_color">@color/midnight_background</color>
 </resources>

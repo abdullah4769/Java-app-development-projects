@@ -3,13 +3,26 @@ package com.example.aibasedcareercounsellingapp.activities;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Toast;
+import android.view.View;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.aibasedcareercounsellingapp.api.ApiClient;
 import com.example.aibasedcareercounsellingapp.databinding.ActivityResumeBuilderBinding;
+import com.example.aibasedcareercounsellingapp.models.GeminiRequest;
+import com.example.aibasedcareercounsellingapp.models.GeminiResponse;
+import com.example.aibasedcareercounsellingapp.utils.Constants;
 import com.example.aibasedcareercounsellingapp.utils.PdfGenerator;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ResumeBuilderActivity extends AppCompatActivity {
 
     private ActivityResumeBuilderBinding binding;
+    private static final String TAG = "ResumeBuilder";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +41,12 @@ public class ResumeBuilderActivity extends AppCompatActivity {
         String skills = binding.etSkills.getText().toString().trim();
         String experience = binding.etExperience.getText().toString().trim();
 
-        if (android.text.TextUtils.isEmpty(education) || android.text.TextUtils.isEmpty(skills)) {
+        if (TextUtils.isEmpty(education) || TextUtils.isEmpty(skills)) {
             Toast.makeText(this, "Please fill Education and Skills first", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        binding.progressBar.setVisibility(android.view.View.VISIBLE);
+        binding.progressBar.setVisibility(View.VISIBLE);
         binding.btnAiSummary.setEnabled(false);
 
         String prompt = "Write a professional resume summary (max 3-4 lines) for a candidate with:\n" +
@@ -42,70 +55,44 @@ public class ResumeBuilderActivity extends AppCompatActivity {
                 "Experience: " + experience + "\n" +
                 "Highlight key achievements and career goals. Provide only the text, no markdown.";
 
-        com.example.aibasedcareercounsellingapp.models.GeminiRequest geminiRequest = 
-                new com.example.aibasedcareercounsellingapp.models.GeminiRequest(prompt);
+        GeminiRequest geminiRequest = new GeminiRequest(prompt);
 
-        // Create JSon Body
-        String jsonBody = new com.google.gson.Gson().toJson(geminiRequest);
-        okhttp3.RequestBody requestBody = okhttp3.RequestBody.create(
-                okhttp3.MediaType.parse("application/json; charset=utf-8"), jsonBody);
-
-        com.example.aibasedcareercounsellingapp.api.ApiClient.getGeminiService()
-                .getAnalysis(com.example.aibasedcareercounsellingapp.utils.Constants.GEMINI_API_KEY, requestBody)
-                .enqueue(new retrofit2.Callback<okhttp3.ResponseBody>() {
+        ApiClient.getGeminiService()
+                .getAnalysis(Constants.GEMINI_API_KEY, geminiRequest)
+                .enqueue(new Callback<GeminiResponse>() {
                     @Override
-                    public void onResponse(retrofit2.Call<okhttp3.ResponseBody> call, 
-                                         retrofit2.Response<okhttp3.ResponseBody> response) {
-                        
-                        android.util.Log.d("GEMINI_RESUME", "Response Code: " + response.code());
-                        Toast.makeText(ResumeBuilderActivity.this, "AI Response Code: " + response.code(), Toast.LENGTH_LONG).show();
-
-                        binding.progressBar.setVisibility(android.view.View.GONE);
+                    public void onResponse(Call<GeminiResponse> call, Response<GeminiResponse> response) {
+                        binding.progressBar.setVisibility(View.GONE);
                         binding.btnAiSummary.setEnabled(true);
 
                         if (response.isSuccessful() && response.body() != null) {
                             try {
-                                String responseString = response.body().string();
-                                android.util.Log.d("GEMINI_RESUME", "Raw Response: " + responseString);
-                                
-                                // Manual Parsing
-                                com.example.aibasedcareercounsellingapp.models.GeminiResponse geminiResponse = 
-                                        new com.google.gson.Gson().fromJson(responseString, com.example.aibasedcareercounsellingapp.models.GeminiResponse.class);
-                                
-                                String summaryText = geminiResponse.getText();
+                                String summaryText = response.body().getText();
                                 binding.etSummary.setText(summaryText);
                                 Toast.makeText(ResumeBuilderActivity.this, "Summary Generated!", Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
-                                e.printStackTrace();
-                                Toast.makeText(ResumeBuilderActivity.this, "Parsing Error", Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, "Parsing Error", e);
+                                Toast.makeText(ResumeBuilderActivity.this, "Parsing Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             try {
                                 String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
-                                android.util.Log.e("GEMINI_RESUME", "Error Body: " + errorBody);
+                                Log.e(TAG, "API Error: " + response.code() + " - " + errorBody);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                Log.e(TAG, "Error reading error body", e);
                             }
                             Toast.makeText(ResumeBuilderActivity.this, "AI Generation Failed: " + response.code(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
-                    public void onFailure(retrofit2.Call<okhttp3.ResponseBody> call, Throwable t) {
-                        binding.progressBar.setVisibility(android.view.View.GONE);
+                    public void onFailure(Call<GeminiResponse> call, Throwable t) {
+                        binding.progressBar.setVisibility(View.GONE);
                         binding.btnAiSummary.setEnabled(true);
-                        android.util.Log.e("GEMINI_RESUME", "Failure: " + t.getMessage());
+                        Log.e(TAG, "Network Error", t);
                         Toast.makeText(ResumeBuilderActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    private String getSummaryFromResponse(com.example.aibasedcareercounsellingapp.models.GeminiResponse response) {
-         // Assuming GeminiResponse structure is compatible or we add a helper
-         // But checking usages, GeminiResponse might need a helper method if getCandidates() is used.
-         // Let's rely on the existing .getText() method if it abstracts the candidates.
-         // The previous code used response.body().getText(), so we assume that exists.
-         return response.getText();
     }
 
     private void generatePdf() {
@@ -127,6 +114,8 @@ public class ResumeBuilderActivity extends AppCompatActivity {
     }
 
     private void saveGeneratedResumeToFireStore(String name) {
+        if (com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser() == null) return;
+        
         String uid = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid();
         java.util.Map<String, Object> data = new java.util.HashMap<>();
         data.put("timestamp", System.currentTimeMillis());
@@ -136,6 +125,6 @@ public class ResumeBuilderActivity extends AppCompatActivity {
         com.google.firebase.firestore.FirebaseFirestore.getInstance()
                 .collection("users").document(uid).collection("generated_resumes")
                 .add(data)
-                .addOnFailureListener(e -> android.util.Log.e("Firestore", "Error saving resume", e));
+                .addOnFailureListener(e -> Log.e(TAG, "Firestore Error", e));
     }
 }

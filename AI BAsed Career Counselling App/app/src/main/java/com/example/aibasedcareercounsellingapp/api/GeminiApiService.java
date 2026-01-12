@@ -14,7 +14,7 @@ import retrofit2.http.Query;
 public interface GeminiApiService {
     
     @retrofit2.http.Headers("Content-Type: application/json")
-    @POST("v1beta/models/gemini-1.5-flash:generateContent")
+    @POST("v1/models/gemini-1.5-flash:generateContent")
     Call<GeminiResponse> getAnalysis(
         @Query("key") String apiKey,
         @Body GeminiRequest body

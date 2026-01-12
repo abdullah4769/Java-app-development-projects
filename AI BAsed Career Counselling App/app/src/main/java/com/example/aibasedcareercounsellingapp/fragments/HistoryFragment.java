@@ -117,7 +117,8 @@ public class HistoryFragment extends Fragment {
                         if (analysis != null && analysis.length() > 50) {
                             analysis = analysis.substring(0, 50) + "..."; // Truncate
                         }
-                        long timestamp = doc.getLong("timestamp");
+                        Long ts = doc.getLong("timestamp");
+                        long timestamp = (ts != null) ? ts : 0L;
                         historyList.add(new com.example.aibasedcareercounsellingapp.models.HistoryItem("Resume Analysis", analysis, timestamp));
                     }
                     finalizeList();

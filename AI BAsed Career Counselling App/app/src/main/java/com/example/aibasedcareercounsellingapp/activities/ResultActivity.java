@@ -94,6 +94,7 @@ public class ResultActivity extends AppCompatActivity {
      * Save prediction result to Firestore history
      */
     private void saveToHistory() {
+        if (mAuth.getCurrentUser() == null) return;
         String userId = mAuth.getCurrentUser().getUid();
         
         // Create history document
@@ -156,47 +157,21 @@ public class ResultActivity extends AppCompatActivity {
         // Call Gemini API
         GeminiRequest geminiRequest = new GeminiRequest(prompt);
         
-        // Create JSon Body
-        String jsonBody = new com.google.gson.Gson().toJson(geminiRequest);
-        okhttp3.RequestBody requestBody = okhttp3.RequestBody.create(
-                okhttp3.MediaType.parse("application/json; charset=utf-8"), jsonBody);
-        
-        ApiClient.getGeminiService().getAnalysis(Constants.GEMINI_API_KEY, requestBody)
-                .enqueue(new Callback<okhttp3.ResponseBody>() {
+        ApiClient.getGeminiService().getAnalysis(Constants.GEMINI_API_KEY, geminiRequest)
+                .enqueue(new Callback<GeminiResponse>() {
                     @Override
-                    public void onResponse(@NonNull Call<okhttp3.ResponseBody> call, @NonNull Response<okhttp3.ResponseBody> response) {
-                        Log.e("GEMINI_TRACE", "URL: " + call.request().url());
-                        Log.d("GEMINI_DEBUG", "URL Called: " + call.request().url().toString());
-                        
+                    public void onResponse(@NonNull Call<GeminiResponse> call, @NonNull Response<GeminiResponse> response) {
                         progressBar.setVisibility(View.GONE);
                         tvAiResponse.setVisibility(View.VISIBLE);
                         
                         if (response.isSuccessful() && response.body() != null) {
-                            try {
-                                String responseString = response.body().string();
-                                
-                                // Manual Parsing
-                                GeminiResponse geminiResponse = 
-                                        new com.google.gson.Gson().fromJson(responseString, GeminiResponse.class);
-                                        
-                                String aiText = geminiResponse.getText();
-                                tvAiResponse.setText(aiText);
-                                Log.d(TAG, "AI Response received");
-                                
-                                // Optionally save AI insight to history
-                                saveAiInsightToLastHistory(aiText);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                tvAiResponse.setText("❌ Failed to parse response");
-                            }
-                        } else {
-                            try {
-                                String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
-                                Log.e("GEMINI_TRACE", "Error Body: " + errorBody);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            String aiText = response.body().getText();
+                            tvAiResponse.setText(aiText);
+                            Log.d(TAG, "AI Response received");
                             
+                            // Optionally save AI insight to history
+                            saveAiInsightToLastHistory(aiText);
+                        } else {
                             tvAiResponse.setText("❌ Failed to get AI response. Error: " + response.code() + 
                                     "\n\nPlease check your API key in Constants.java");
                             Log.e(TAG, "API Error: " + response.code());
@@ -204,10 +179,7 @@ public class ResultActivity extends AppCompatActivity {
                     }
                     
                     @Override
-                    public void onFailure(@NonNull Call<okhttp3.ResponseBody> call, @NonNull Throwable t) {
-                        Log.e("GEMINI_TRACE", "URL: " + call.request().url());
-                        Log.e("GEMINI_TRACE", "Failure: " + t.getMessage());
-                        
+                    public void onFailure(@NonNull Call<GeminiResponse> call, @NonNull Throwable t) {
                         progressBar.setVisibility(View.GONE);
                         tvAiResponse.setVisibility(View.VISIBLE);
                         tvAiResponse.setText("❌ Network error: " + t.getMessage() + 
@@ -226,6 +198,7 @@ public class ResultActivity extends AppCompatActivity {
      * Save AI insight to the most recent history entry
      */
     private void saveAiInsightToLastHistory(String aiInsight) {
+        if (mAuth.getCurrentUser() == null) return;
         String userId = mAuth.getCurrentUser().getUid();
         
         db.collection("users").document(userId)
