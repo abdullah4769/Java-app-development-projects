@@ -2,11 +2,11 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     
-    <!-- Deep Blue to Cyan gradient -->
+    <!-- Soft Aesthetic Gradient (White to Pastel Blue) -->
     <gradient
         android:angle="135"
-        android:startColor="@color/deep_blue"
-        android:centerColor="@color/deep_blue_dark"
-        android:endColor="@color/cyan"
+        android:startColor="#FFFFFF"
+        android:centerColor="#F5F7FF"
+        android:endColor="#E0E0FF"
         android:type="linear" />
 </shape>

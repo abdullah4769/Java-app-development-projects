@@ -1,41 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Midnight Obsidian Palette -->
-    <color name="midnight_background">#121212</color>
-    <color name="card_surface">#1F1F1F</color>
-    <color name="electric_blue">#4D96FF</color>
+    <!-- Light Aesthetic Palette (Professional & Clean) -->
+    <color name="aesthetic_bg">#F5F7FF</color> <!-- Soft Pastel Blue-White -->
+    <color name="card_surface">#FFFFFF</color> <!-- Pure White -->
+    <color name="primary_accent">#6C63FF</color> <!-- Soft Purple/Blue (Creative & Professional) -->
+    <color name="primary_accent_light">#A3A1FF</color>
     
     <!-- Text Colors -->
-    <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#B0B0B0</color>
-    <color name="text_hint">#808080</color>
+    <color name="text_primary">#2D3436</color> <!-- Dark Charcoal (Softer than black) -->
+    <color name="text_secondary">#636E72</color> <!-- Slate Gray -->
+    <color name="text_hint">#B2BEC3</color>
     
     <!-- Functional Colors -->
-    <color name="error_red">#CF6679</color>
-    <color name="success_green">#03DAC6</color>
+    <color name="error_red">#FF7675</color> <!-- Pastel Red -->
+    <color name="success_green">#55EFC4</color> <!-- Pastel Teal -->
     <color name="transparent">#00000000</color>
-    
-    <!-- Legacy Mappings (for compatibility) -->
+
+    <!-- UI Elements -->
+    <color name="glass_stroke">#80FFFFFF</color>
+    <color name="nav_bar_color">#FFFFFF</color>
+    <color name="status_bar_color">#F5F7FF</color>
+
+    <!-- Legacy Mappings (Mapped to Light Theme) -->
     <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
-    <color name="bg_color">@color/midnight_background</color>
-    <color name="deep_blue">@color/electric_blue</color>
-    <color name="deep_blue_dark">#0056D2</color>
-    <color name="cyan">@color/electric_blue</color>
-    <color name="cyan_light">#82B1FF</color>
+    <color name="black">#2D3436</color>
+    <color name="bg_color">@color/aesthetic_bg</color>
+    
+    <color name="deep_blue">@color/primary_accent</color>
+    <color name="deep_blue_dark">@color/primary_accent</color>
+    <color name="cyan">@color/primary_accent_light</color>
+    <color name="cyan_light">@color/primary_accent_light</color>
+    
+    <color name="midnight_background">@color/aesthetic_bg</color> <!-- Override Dark -->
+    <color name="electric_blue">@color/primary_accent</color> <!-- Override Dark -->
     <color name="surface_dark">@color/card_surface</color>
     
-    <!-- Restored Legacy Colors (Fixing Build Errors) -->
-    <color name="text_white">@color/text_primary</color>
-    <color name="white_background">@color/midnight_background</color>
-    <color name="primary_blue">@color/electric_blue</color>
-    <color name="dark_gray">@color/card_surface</color>
+    <color name="text_white">#FFFFFF</color> <!-- Kept white for buttons/inverses -->
+    <color name="white_background">@color/card_surface</color>
+    <color name="primary_blue">@color/primary_accent</color>
+    <color name="dark_gray">@color/text_secondary</color>
     
-    <!-- Glassmorphic mappings -->
-    <color name="glass_background">@color/card_surface</color>
-    <color name="glass_stroke">#334D96FF</color>
-    
-    <!-- UI Elements -->
-    <color name="nav_bar_color">@color/card_surface</color>
-    <color name="status_bar_color">@color/midnight_background</color>
+    <color name="glass_background">#CCFFFFFF</color> <!-- Semi-transparent White -->
 </resources>

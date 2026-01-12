@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Midnight Obsidian Theme -->
-    <style name="Base.Theme.AIBAsedCareerCounsellingApp" parent="Theme.Material3.Dark.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/electric_blue</item>
-        <item name="colorOnPrimary">@color/midnight_background</item>
-        <item name="colorPrimaryContainer">@color/card_surface</item>
+    <!-- Base application theme (Light Aesthetic) -->
+    <style name="Base.Theme.AIBasedCareerCounsellingApp" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/primary_accent</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#E0E0FF</item>
         <item name="colorOnPrimaryContainer">@color/text_primary</item>
         
-        <!-- Background color. -->
-        <item name="android:colorBackground">@color/midnight_background</item>
-        <item name="android:windowBackground">@color/midnight_background</item>
+        <!-- Backgrounds -->
+        <item name="android:colorBackground">@color/aesthetic_bg</item>
+        <item name="android:windowBackground">@color/aesthetic_bg</item>
         <item name="colorSurface">@color/card_surface</item>
         <item name="colorOnSurface">@color/text_primary</item>
 
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/midnight_background</item>
-        <item name="android:windowLightStatusBar">false</item>
-        
-        <!-- Font Family -->
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@color/status_bar_color</item>
+        <item name="android:windowLightStatusBar">true</item> <!-- Dark icons on light bg -->
+
+        <!-- Typography -->
         <item name="fontFamily">@font/poppins</item>
         <item name="android:fontFamily">@font/poppins</item>
         
-        <!-- Ripple Effect -->
-        <item name="android:colorControlHighlight">@color/electric_blue</item>
+        <!-- Ripple -->
+        <item name="android:colorControlHighlight">#206C63FF</item>
     </style>
 
-    <style name="Theme.AIBAsedCareerCounsellingApp" parent="Base.Theme.AIBAsedCareerCounsellingApp" />
+    <style name="Theme.AIBasedCareerCounsellingApp" parent="Base.Theme.AIBasedCareerCounsellingApp" />
 </resources>
